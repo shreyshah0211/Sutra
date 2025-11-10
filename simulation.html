@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Simulation - Sutra</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>Sutra</h1>
+            </div>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('cases') }}">Cases</a></li>
+                <li><a href="#">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="simulation-container">
+        <div class="simulation-header">
+            <h1>Case Simulation</h1>
+            <!-- <div class="user-profile">
+                <img src="{{ url_for('static', filename='images/avatar-placeholder.png') }}" alt="User avatar">
+                <span>{{ case.name }} <i class="arrow-down"></i></span>
+            </div> -->
+        </div>
+
+        <!-- Phase indicator -->
+        <div class="phase-indicator">
+            <div class="phase" id="learn-phase">
+                <div class="phase-circle active">1</div>
+                <div class="phase-label">Patient Assessment</div>
+            </div>
+            <div class="phase-line"></div>
+            <div class="phase" id="diagnosis-phase">
+                <div class="phase-circle">2</div>
+                <div class="phase-label">Differential Diagnosis</div>
+            </div>
+            <div class="collaboration-container">
+                <button id="invite-peers" class="collaboration-btn" title="Invite peers to collaborate">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 21V19C16 17.9391 15.5786 16.9217 14.8284 16.1716C14.0783 15.4214 13.0609 15 12 15H6C4.93913 15 3.92172 15.4214 3.17157 16.1716C2.42143 16.9217 2 17.9391 2 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M9 11C11.2091 11 13 9.20914 13 7C13 4.79086 11.2091 3 9 3C6.79086 3 5 4.79086 5 7C5 9.20914 6.79086 11 9 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 21V19C21.9993 18.1137 21.7044 17.2528 21.1614 16.5523C20.6184 15.8519 19.8581 15.3516 19 15.13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89318 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Invite Peers</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Learn Phase (Patient Interview) -->
+        <div id="learn-phase-content" class="phase-content active">
+            <div class="simulation-layout">
+                <div class="patient-info">
+                    <div class="patient-profile">
+                        <img src="{{ url_for('static', filename='images/patient-placeholder.webp') }}" alt="Patient" class="patient-image">
+                        <div class="patient-details">
+                            <h2>{{ case.name }}</h2>
+                            <div class="patient-tags">
+                                <span class="patient-age">{{ case.age }} year old</span>
+                                <span class="patient-complaint">{{ case.chief_complaint }}</span>
+                            </div>
+                            <p class="patient-description">
+                                {{ case.age }}-year-old {{ case.gender.lower() }} complains of {{ case.chief_complaint.lower() }}. 
+                                {% if case.symptoms|length > 2 %}
+                                {{ case.symptoms[1] }}.
+                                {% endif %}
+                            </p>
+                            
+                            {% if case.physical_exam or case.labs %}
+                            <div class="patient-details-expandable">
+                                <button class="details-toggle">
+                                    <span>More Details</span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19 9L12 16L5 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                                <div class="details-content">
+                                    {% if case.physical_exam %}
+                                    <div class="detail-section">
+                                        <h4>Physical Exam</h4>
+                                        <p>{{ case.physical_exam }}</p>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if case.labs %}
+                                    <div class="detail-section">
+                                        <h4>Labs</h4>
+                                        <p>{{ case.labs }}</p>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if case.follow_up %}
+                                    <div class="detail-section">
+                                        <h4>Follow-up</h4>
+                                        <p>{{ case.follow_up }}</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- <div class="audio-player">
+                        <button id="play-audio" class="play-button">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 16.5V7.5L16 12L10 16.5Z" fill="currentColor"/>
+                            </svg>
+                        </button>
+                        <div class="audio-waveform">
+                            <div class="waveform-placeholder"></div>
+                        </div>
+                        {% if case.audio_file %}
+                        <audio id="patient-audio" src="{{ url_for('static', filename=case.audio_file) }}" style="display:none;"></audio>
+                        {% endif %}
+                    </div> -->
+                </div>
+
+                <div class="action-steps">
+                    <div class="vital-signs-panel">
+                        <h3>Vital Signs</h3>
+                        {% if case.vitals %}
+                        <div class="vital-signs-grid">
+                            {% if case.vitals.bp %}
+                            <div class="vital-card">
+                                <div class="vital-value">{{ case.vitals.bp }}</div>
+                                <div class="vital-label">Blood Pressure</div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if case.vitals.hr %}
+                            <div class="vital-card">
+                                <div class="vital-value">{{ case.vitals.hr }}</div>
+                                <div class="vital-label">Heart Rate</div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if case.vitals.rr %}
+                            <div class="vital-card">
+                                <div class="vital-value">{{ case.vitals.rr }}</div>
+                                <div class="vital-label">Respiratory Rate</div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if case.vitals.temp %}
+                            <div class="vital-card">
+                                <div class="vital-value">{{ case.vitals.temp }}°F</div>
+                                <div class="vital-label">Temperature</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <p class="no-vitals">No vital signs recorded.</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Physical Examination Section - Initially hidden -->
+                    <div id="physical-exam-container" class="physical-exam-container" style="display: none;">
+                        <div class="exam-header">
+                            <h3>Physical Examination</h3>
+                            <span class="exam-timestamp">Conducted just now</span>
+                        </div>
+                        
+                        <div class="exam-content">
+                            <!-- Tabs for navigating different exam types -->
+                            <div class="exam-tabs">
+                                <button class="exam-tab-btn active" data-exam-tab="visual">Visual Findings</button>
+                                <button class="exam-tab-btn" data-exam-tab="audio">Auscultation</button>
+                                <button class="exam-tab-btn" data-exam-tab="models">3D Models</button>
+                            </div>
+                            
+                            <!-- Visual Findings Tab Content -->
+                            <div id="visual-tab" class="exam-tab-content active">
+                                <div class="exam-images">
+                                    <!-- Images will be loaded here dynamically -->
+                                </div>
+                            </div>
+                            
+                            <!-- Auscultation Tab Content -->
+                            <div id="audio-tab" class="exam-tab-content">
+                                <div class="exam-audio-players">
+                                    <!-- Audio players will be loaded here dynamically -->
+                                </div>
+                            </div>
+                            
+                            <!-- 3D Models Tab Content -->
+                            <div id="models-tab" class="exam-tab-content">
+                                <div class="exam-models">
+                                    <!-- 3D models will be loaded here dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-container">
+                <div id="chat-messages" class="chat-messages">
+                    <!-- Messages will be added here -->
+                    <div class="message patient">
+                        <p>Hello, I'm {{ case.name }}. I've been experiencing {{ case.chief_complaint.lower() }}.</p>
+                    </div>
+                </div>
+                
+                <!-- Starter prompts for users who need guidance -->
+                <div class="starter-prompts">
+                    <p class="starter-prompts-heading">Suggested questions:</p>
+                    <div class="prompt-buttons">
+                        <button class="prompt-btn" data-prompt="Can you describe when your symptoms started?">When did symptoms start?</button>
+                        <button class="prompt-btn" data-prompt="Can you rate your pain on a scale of 1 to 10?">Rate your pain (1-10)</button>
+                        <button class="prompt-btn" data-prompt="Does anything make your symptoms better or worse?">What makes it better/worse?</button>
+                        <button class="prompt-btn" data-prompt="Have you had any similar symptoms in the past?">Similar symptoms before?</button>
+                        <button class="prompt-btn" data-prompt="Do you have any other symptoms that you've noticed?">Other symptoms?</button>
+                        <button class="prompt-btn physical-exam-btn" data-prompt="I'd like to perform a physical examination now, if that's okay with you?.">Conduct physical exam</button>
+                    </div>
+                </div>
+                
+                <div class="chat-input">
+                    <textarea id="user-message" placeholder="Ask the patient about their symptoms..."></textarea>
+                    <button id="send-message">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 12L20 4L12 22L10 14L2 12Z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                    <button id="voice-input">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 14C13.66 14 15 12.66 15 11V5C15 3.34 13.66 2 12 2C10.34 2 9 3.34 9 5V11C9 12.66 10.34 14 12 14ZM18 11C18 14.53 15.39 17.44 12 17.93V21H10V17.93C6.61 17.44 4 14.53 4 11H6C6 13.76 8.24 16 11 16C13.76 16 16 13.76 16 11H18Z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="chat-actions">
+                    <!-- <button id="order-imaging" class="btn-secondary">Order Imaging</button> -->
+                    <button id="proceed-diagnosis" class="btn-primary">Proceed to Diagnosis</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diagnosis Phase (Clinical Information) -->
+        <div id="diagnosis-phase-content" class="phase-content">
+            <div class="clinical-info-container compact always-expanded">
+                <div class="clinical-info-header">
+                    <div class="patient-summary">
+                        <span class="patient-name">{{ case.name }}</span>
+                        <span class="patient-details">{{ case.age }}yo {{ case.gender }} | {{ case.chief_complaint }}</span>
+                    </div>
+                </div>
+                
+                <div class="clinical-info-expandable expanded">
+                    <div class="clinical-tabs">
+                        <button class="tab-btn active" data-tab="symptoms">Symptoms</button>
+                        <button class="tab-btn" data-tab="history">History</button>
+                        {% if case.imaging_needed %}
+                        <button class="tab-btn" data-tab="imaging">Imaging</button>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="tab-content active" id="symptoms-tab">
+                        <ul class="symptom-list-compact">
+                            {% for symptom in case.symptoms %}
+                            <li>{{ symptom }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    
+                    <div class="tab-content" id="history-tab">
+                        <p>{{ case.history }}</p>
+                    </div>
+                    
+                    {% if case.imaging_needed %}
+                    <div class="tab-content" id="imaging-tab">
+                        <p>{{ case.imaging_needed }} shows:</p>
+                        {% if case.imaging_files %}
+                            <div class="imaging-results">
+                                {% if case.imaging_files.initial_chest_xray_pa %}
+                                <div class="imaging-item">
+                                    <h4>Initial PA View</h4>
+                                    <img src="{{ url_for('static', filename=case.imaging_files.initial_chest_xray_pa) }}" alt="Initial PA chest X-ray" class="imaging-image">
+                                </div>
+                                {% endif %}
+                                
+                                {% if case.imaging_files.initial_chest_xray_lateral %}
+                                <div class="imaging-item">
+                                    <h4>Initial Lateral View</h4>
+                                    <img src="{{ url_for('static', filename=case.imaging_files.initial_chest_xray_lateral) }}" alt="Initial lateral chest X-ray" class="imaging-image">
+                                </div>
+                                {% endif %}
+                                
+                                {% if case.imaging_files.follow_up_chest_xray_pa %}
+                                <div class="imaging-item">
+                                    <h4>Follow-up PA View (after treatment)</h4>
+                                    <img src="{{ url_for('static', filename=case.imaging_files.follow_up_chest_xray_pa) }}" alt="Follow-up PA chest X-ray" class="imaging-image">
+                                </div>
+                                {% endif %}
+                                
+                                {% if case.imaging_files.follow_up_chest_xray_lateral %}
+                                <div class="imaging-item">
+                                    <h4>Follow-up Lateral View (after treatment)</h4>
+                                    <img src="{{ url_for('static', filename=case.imaging_files.follow_up_chest_xray_lateral) }}" alt="Follow-up lateral chest X-ray" class="imaging-image">
+                                </div>
+                                {% endif %}
+                                
+                                {% if case.imaging_files.finger_clubbing %}
+                                <div class="imaging-item">
+                                    <h4>Clinical Finding: Finger Clubbing</h4>
+                                    <img src="{{ url_for('static', filename=case.imaging_files.finger_clubbing) }}" alt="Finger clubbing" class="imaging-image">
+                                    <p class="imaging-caption">Finger clubbing - indicative of chronic hypoxemia, commonly seen in pulmonary fibrosis and other chronic respiratory conditions.</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="imaging-placeholder">
+                                [Imaging result will appear here]
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="diagnosis-chat">
+                <div id="diagnosis-messages" class="chat-messages">
+                    <!-- Messages will be added here -->
+                    <div class="message doctor">
+                        <p>Let's work through the differential diagnosis. What are your initial thoughts based on the patient's presentation?</p>
+                    </div>
+                </div>
+                
+                <!-- Starter prompts for diagnosis phase -->
+                <div class="starter-prompts">
+                    <p class="starter-prompts-heading">Suggested responses:</p>
+                    <div class="prompt-buttons">
+                        <button class="prompt-btn" data-prompt="Based on the symptoms, I'm considering diagnoses like...">Share initial diagnoses</button>
+                        <button class="prompt-btn" data-prompt="The key findings that support my diagnosis are...">Discuss key findings</button>
+                        <button class="prompt-btn" data-prompt="I would like to rule out other conditions such as...">Rule out differentials</button>
+                        <button class="prompt-btn" data-prompt="I would recommend the following treatment plan...">Suggest treatment</button>
+                        <button class="prompt-btn" data-prompt="Additional tests I would order include...">Additional tests</button>
+                    </div>
+                </div>
+                
+                <div class="chat-input">
+                    <textarea id="diagnosis-message" placeholder="Discuss your diagnostic reasoning..."></textarea>
+                    <button id="send-diagnosis">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 12L20 4L12 22L10 14L2 12Z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                    <button id="diagnosis-voice-input">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 14C13.66 14 15 12.66 15 11V5C15 3.34 13.66 2 12 2C10.34 2 9 3.34 9 5V11C9 12.66 10.34 14 12 14ZM18 11C18 14.53 15.39 17.44 12 17.93V21H10V17.93C6.61 17.44 4 14.53 4 11H6C6 13.76 8.24 16 11 16C13.76 16 16 13.76 16 11H18Z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="chat-actions">
+                    <button id="submit-diagnosis" class="btn-primary">Submit Final Diagnosis</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completion Button -->
+        <div class="completion-button" id="completion-section" style="display: none;">
+            <button id="complete-simulation" class="btn-success">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 16.2L4.8 12L3.4 13.4L9 19L21 7L19.6 5.6L9 16.2Z" fill="white"/>
+                </svg>
+                Clinical Onboarding Complete
+            </button>
+        </div>
+    </main>
+
+    <script>
+        // Simulation phase management
+        document.getElementById('proceed-diagnosis').addEventListener('click', function() {
+            // Send transition request to server
+            fetch('/api/transition', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Switch to diagnosis phase
+                    document.getElementById('learn-phase-content').classList.remove('active');
+                    document.getElementById('diagnosis-phase-content').classList.add('active');
+                    
+                    // Update phase indicator
+                    document.getElementById('learn-phase').querySelector('.phase-circle').classList.remove('active');
+                    document.getElementById('diagnosis-phase').querySelector('.phase-circle').classList.add('active');
+                    
+                    // Initialize clinical info container
+                    initializeClinicalInfo();
+                    
+                    // Initialize prompt buttons for diagnosis phase
+                    initializePromptButtons('diagnosis-message', 'send-diagnosis');
+                }
+            });
+        });
+
+        // Initialize starter prompt buttons
+        function initializePromptButtons(textareaId, sendButtonId) {
+            const promptButtons = document.querySelectorAll(`.prompt-btn`);
+            
+            promptButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const promptText = this.getAttribute('data-prompt');
+                    const textarea = document.getElementById(textareaId);
+                    
+                    // Set the prompt text in the textarea
+                    textarea.value = promptText;
+                    textarea.focus();
+                    
+                    // Option to automatically send the prompt
+                    // Uncomment the line below to auto-send when a prompt is clicked
+                    // document.getElementById(sendButtonId).click();
+                });
+            });
+        }
+        
+        // Initialize prompt buttons for patient assessment phase
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePromptButtons('user-message', 'send-message');
+        });
+
+        // Clinical info container functionality
+        function initializeClinicalInfo() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            
+            // Tab switching
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    btn.classList.add('active');
+                    
+                    // Show corresponding content
+                    const tabName = btn.getAttribute('data-tab');
+                    document.getElementById(`${tabName}-tab`).classList.add('active');
+                });
+            });
+        }
+
+        // Initialize collaboration button
+        document.getElementById('invite-peers').addEventListener('click', function() {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'collaboration-notification';
+            notification.textContent = 'Collaboration feature coming soon!';
+            document.body.appendChild(notification);
+            
+            // Remove after animation
+            setTimeout(() => {
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }, 2000);
+            }, 10);
+        });
+
+        // Voice recording variables
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        let voiceModeEnabled = false;
+        
+        // Physical exam variables
+        let physicalExamConducted = false;
+        let physicalExamData = null;
+        
+        // Sample physical exam data (placeholder until provided from server)
+        const samplePhysicalExamData = {
+            visualFindings: [
+                {
+                    imageUrl: "{{ url_for('static', filename='data/case1/image61.jpg') }}",
+                    caption: "Finger clubbing - indicative of chronic hypoxemia, commonly seen in certain pulmonary conditions"
+                }
+            ],
+            auscultation: [
+                {
+                    title: "Lung Sounds - Bilateral Rales",
+                    audioUrl: "{{ url_for('static', filename='data/case1/ralesbro.mp3') }}",
+                    description: "Auscultation reveals bilateral rales (crackles), suggestive of interstitial fluid accumulation"
+                }
+            ],
+            models3D: [
+                {
+                    title: "Lung Pathology Model",
+                    embedCode: '<iframe title="Lung Pathology" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/6eb72c6a02514f438acb0bc6e3f5fba8/embed"> </iframe>',
+                    description: "3D model showing lung pathology"
+                }
+            ]
+        };
+        
+        // Initialize voice mode based on user preference (from localStorage)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user previously enabled voice mode
+            const savedVoiceMode = localStorage.getItem('voiceModeEnabled');
+            if (savedVoiceMode === 'true') {
+                // Enable voice mode on page load
+                setTimeout(() => {
+                    toggleVoiceMode();
+                }, 1000); // Slight delay to ensure page is fully loaded
+            }
+        });
+        
+        // Toggle voice mode
+        function toggleVoiceMode() {
+            voiceModeEnabled = !voiceModeEnabled;
+            const voiceButton = document.getElementById('voice-input');
+            const diagnosisVoiceButton = document.getElementById('diagnosis-voice-input');
+            
+            // Save user preference to localStorage
+            localStorage.setItem('voiceModeEnabled', voiceModeEnabled.toString());
+            
+            if (voiceModeEnabled) {
+                voiceButton.classList.add('active');
+                diagnosisVoiceButton.classList.add('active');
+                // Show voice mode indicator
+                if (!document.getElementById('voice-mode-indicator')) {
+                    const indicator = document.createElement('div');
+                    indicator.id = 'voice-mode-indicator';
+                    indicator.className = 'voice-mode-indicator';
+                    indicator.textContent = 'Voice Mode Active';
+                    document.querySelector('.chat-input').appendChild(indicator);
+                    
+                    const diagnosisIndicator = indicator.cloneNode(true);
+                    document.querySelector('.diagnosis-chat .chat-input').appendChild(diagnosisIndicator);
+                }
+                
+                // Play the initial greeting message when voice mode is first enabled
+                if (document.getElementById('learn-phase-content').classList.contains('active')) {
+                    playInitialGreeting();
+                }
+            } else {
+                voiceButton.classList.remove('active');
+                diagnosisVoiceButton.classList.remove('active');
+                // Remove voice mode indicator
+                const indicator = document.getElementById('voice-mode-indicator');
+                if (indicator) indicator.remove();
+                const diagnosisIndicator = document.querySelector('.diagnosis-chat .voice-mode-indicator');
+                if (diagnosisIndicator) diagnosisIndicator.remove();
+                
+                // Stop recording if active
+                if (isRecording) {
+                    stopRecording();
+                }
+            }
+        }
+        
+        // Initialize voice recording
+        async function initializeRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+                
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    await processAudioInput(audioBlob);
+                    audioChunks = [];
+                };
+                
+                return true;
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                alert('Unable to access microphone. Please check permissions and try again.');
+                return false;
+            }
+        }
+        
+        // Start recording
+        async function startRecording() {
+            if (!mediaRecorder) {
+                const initialized = await initializeRecording();
+                if (!initialized) return;
+            }
+            
+            if (mediaRecorder.state === 'inactive') {
+                audioChunks = [];
+                mediaRecorder.start();
+                isRecording = true;
+                
+                // Update UI to show recording in progress
+                const voiceButton = document.activeElement;
+                voiceButton.classList.add('recording');
+                
+                // Add recording indicator
+                const recordingIndicator = document.createElement('div');
+                recordingIndicator.id = 'recording-indicator';
+                recordingIndicator.className = 'recording-indicator';
+                recordingIndicator.textContent = 'Recording...';
+                voiceButton.parentNode.appendChild(recordingIndicator);
+            }
+        }
+        
+        // Stop recording
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                // Update UI to show recording stopped
+                const voiceButton = document.querySelector('.recording');
+                if (voiceButton) {
+                    voiceButton.classList.remove('recording');
+                }
+                
+                // Remove recording indicator
+                const recordingIndicator = document.getElementById('recording-indicator');
+                if (recordingIndicator) {
+                    recordingIndicator.remove();
+                }
+            }
+        }
+        
+        // Process audio input using OpenAI Whisper API
+        async function processAudioInput(audioBlob) {
+            // Create form data for the API request
+            const formData = new FormData();
+            formData.append('audio', audioBlob, 'recording.wav');
+            
+            try {
+                // Send to server endpoint that will handle OpenAI Whisper API call
+                const response = await fetch('/api/transcribe', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.text) {
+                    // Get the active textarea based on which phase is active
+                    let messageInput;
+                    if (document.getElementById('learn-phase-content').classList.contains('active')) {
+                        messageInput = document.getElementById('user-message');
+                    } else {
+                        messageInput = document.getElementById('diagnosis-message');
+                    }
+                    
+                    // Set transcribed text in the textarea
+                    messageInput.value = data.text;
+                    
+                    // Automatically send the message
+                    if (document.getElementById('learn-phase-content').classList.contains('active')) {
+                        sendPatientMessage();
+                    } else {
+                        sendDiagnosisMessage();
+                    }
+                }
+            } catch (error) {
+                console.error('Error transcribing audio:', error);
+                alert('Failed to transcribe audio. Please try again.');
+            }
+        }
+        
+        // Play text-to-speech audio
+        async function playResponseAudio(text, isPatient = true) {
+            try {
+                // Request TTS audio from server
+                const response = await fetch('/api/text-to-speech', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        text: text,
+                        voice: isPatient ? 'onyx' : 'alloy' // Use Onyx for patient, Alloy for doctor
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to generate speech');
+                }
+                
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+                
+                // Create and play audio element
+                const audio = new Audio(audioUrl);
+                audio.play();
+                
+                // Clean up URL object after playing
+                audio.onended = () => {
+                    URL.revokeObjectURL(audioUrl);
+                };
+            } catch (error) {
+                console.error('Error playing TTS audio:', error);
+            }
+        }
+
+        // Chat functionality for learn phase
+        document.getElementById('send-message').addEventListener('click', sendPatientMessage);
+        document.getElementById('user-message').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendPatientMessage();
+            }
+        });
+        
+        // Voice input button event listeners
+        document.getElementById('voice-input').addEventListener('click', function() {
+            if (!voiceModeEnabled) {
+                toggleVoiceMode();
+                return;
+            }
+            
+            if (!isRecording) {
+                startRecording();
+            } else {
+                stopRecording();
+            }
+        });
+        
+        document.getElementById('diagnosis-voice-input').addEventListener('click', function() {
+            if (!voiceModeEnabled) {
+                toggleVoiceMode();
+                return;
+            }
+            
+            if (!isRecording) {
+                startRecording();
+            } else {
+                stopRecording();
+            }
+        });
+        
+        // Function to play the initial greeting message when page loads
+        function playInitialGreeting() {
+            // Get the initial message text from the DOM
+            const initialMessageElement = document.querySelector('.message.patient p');
+            if (initialMessageElement && voiceModeEnabled) {
+                const initialMessage = initialMessageElement.textContent;
+                playResponseAudio(initialMessage, true);
+            }
+        }
+        
+        // Listen for keyboard shortcut (Spacebar) to toggle recording while in voice mode
+        document.addEventListener('keydown', function(e) {
+            if (voiceModeEnabled && e.code === 'Space' && !e.target.matches('textarea, input')) {
+                e.preventDefault();
+                if (!isRecording) {
+                    startRecording();
+                }
+            }
+        });
+        
+        document.addEventListener('keyup', function(e) {
+            if (voiceModeEnabled && e.code === 'Space' && isRecording && !e.target.matches('textarea, input')) {
+                e.preventDefault();
+                stopRecording();
+            }
+        });
+
+        function sendPatientMessage() {
+            const messageInput = document.getElementById('user-message');
+            const message = messageInput.value.trim();
+            
+            if (message) {
+                // Add user message to chat
+                const chatMessages = document.getElementById('chat-messages');
+                const userMessageDiv = document.createElement('div');
+                userMessageDiv.className = 'message user';
+                userMessageDiv.innerHTML = `<p>${message}</p>`;
+                chatMessages.appendChild(userMessageDiv);
+                
+                // Clear input
+                messageInput.value = '';
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Check if message is asking for physical exam
+                if (checkForPhysicalExamRequest(message) && !physicalExamConducted) {
+                    // Handle physical exam request
+                    conductPhysicalExam();
+                }
+                
+                // Send to server and get response
+                fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        message: message,
+                        requestedPhysicalExam: checkForPhysicalExamRequest(message)
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Add AI response to chat
+                    const aiMessageDiv = document.createElement('div');
+                    aiMessageDiv.className = 'message patient';
+                    aiMessageDiv.innerHTML = `<p>${data.response}</p>`;
+                    chatMessages.appendChild(aiMessageDiv);
+                    
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    
+                    // Play the response as audio if voice mode is enabled
+                    if (voiceModeEnabled) {
+                        playResponseAudio(data.response, true);
+                    }
+                    
+                    // If server returned physical exam data, use it
+                    if (data.physicalExamData && !physicalExamConducted) {
+                        physicalExamData = data.physicalExamData;
+                        showPhysicalExamResults();
+                    }
+                });
+            }
+        }
+        
+        // Check if the message is requesting a physical exam
+        function checkForPhysicalExamRequest(message) {
+            const physicalExamKeywords = [
+                'physical exam', 
+                'examine', 
+                'examination',
+                'check',
+                'auscultate',
+                'palpate',
+                'percuss',
+                'inspect',
+                'listen to lungs',
+                'listen to chest',
+                'check fingers',
+                'examine hands',
+                'respiratory exam',
+                'lung exam',
+                'breath sounds'
+            ];
+            
+            const lowercaseMessage = message.toLowerCase();
+            return physicalExamKeywords.some(keyword => lowercaseMessage.includes(keyword));
+        }
+        
+        // Function to handle physical exam request
+        function conductPhysicalExam() {
+            // Mark that physical exam has been conducted
+            physicalExamConducted = true;
+            
+            // Use sample data for now (in a real app, this would come from the server)
+            physicalExamData = samplePhysicalExamData;
+            
+            // Show the physical exam results
+            showPhysicalExamResults();
+            
+            // Add a system message about the exam
+            const chatMessages = document.getElementById('chat-messages');
+            const systemMessage = document.createElement('div');
+            systemMessage.className = 'message system';
+            systemMessage.innerHTML = `<p>Physical examination conducted. You note finger clubbing and auscultate bilateral crackles (rales) at the lung bases. These findings are consistent with chronic respiratory disease, possibly pulmonary fibrosis or another interstitial lung disease.</p>`;
+            chatMessages.appendChild(systemMessage);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Function to display physical exam results in the UI
+        function showPhysicalExamResults() {
+            const examContainer = document.getElementById('physical-exam-container');
+            examContainer.style.display = 'block';
+            
+            // Load images
+            if (physicalExamData.visualFindings && physicalExamData.visualFindings.length > 0) {
+                const imagesContainer = document.querySelector('.exam-images');
+                imagesContainer.innerHTML = '';
+                
+                physicalExamData.visualFindings.forEach(finding => {
+                    const imageItem = document.createElement('div');
+                    imageItem.className = 'exam-image-item';
+                    imageItem.innerHTML = `
+                        <img src="${finding.imageUrl}" alt="${finding.caption}">
+                        <div class="exam-image-caption">${finding.caption}</div>
+                    `;
+                    imagesContainer.appendChild(imageItem);
+                });
+            }
+            
+            // Load audio
+            if (physicalExamData.auscultation && physicalExamData.auscultation.length > 0) {
+                const audioContainer = document.querySelector('.exam-audio-players');
+                audioContainer.innerHTML = '';
+                
+                physicalExamData.auscultation.forEach(audioItem => {
+                    const audioElement = document.createElement('div');
+                    audioElement.className = 'exam-audio-item';
+                    audioElement.innerHTML = `
+                        <div class="exam-audio-title">${audioItem.title}</div>
+                        <audio class="exam-audio-player" controls>
+                            <source src="${audioItem.audioUrl}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    `;
+                    audioContainer.appendChild(audioElement);
+                });
+            }
+            
+            // Load 3D models
+            if (physicalExamData.models3D && physicalExamData.models3D.length > 0) {
+                const modelsContainer = document.querySelector('.exam-models');
+                modelsContainer.innerHTML = '';
+                
+                physicalExamData.models3D.forEach(model => {
+                    const modelItem = document.createElement('div');
+                    modelItem.className = 'exam-model-item';
+                    modelItem.innerHTML = model.embedCode;
+                    modelsContainer.appendChild(modelItem);
+                });
+            }
+            
+            // Initialize tab navigation
+            initializeExamTabs();
+        }
+        
+        // Tab switching for physical exam results
+        function initializeExamTabs() {
+            const tabButtons = document.querySelectorAll('.exam-tab-btn');
+            
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.exam-tab-content').forEach(content => content.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    btn.classList.add('active');
+                    
+                    // Show corresponding content
+                    const tabName = btn.getAttribute('data-exam-tab');
+                    document.getElementById(`${tabName}-tab`).classList.add('active');
+                });
+            });
+        }
+
+        // Chat functionality for diagnosis phase
+        document.getElementById('send-diagnosis').addEventListener('click', sendDiagnosisMessage);
+        document.getElementById('diagnosis-message').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendDiagnosisMessage();
+            }
+        });
+
+        function sendDiagnosisMessage() {
+            const messageInput = document.getElementById('diagnosis-message');
+            const message = messageInput.value.trim();
+            
+            if (message) {
+                // Add user message to chat
+                const chatMessages = document.getElementById('diagnosis-messages');
+                const userMessageDiv = document.createElement('div');
+                userMessageDiv.className = 'message user';
+                userMessageDiv.innerHTML = `<p>${message}</p>`;
+                chatMessages.appendChild(userMessageDiv);
+                
+                // Clear input
+                messageInput.value = '';
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Send to server and get response
+                fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Add AI response to chat
+                    const aiMessageDiv = document.createElement('div');
+                    aiMessageDiv.className = 'message doctor';
+                    aiMessageDiv.innerHTML = `<p>${data.response}</p>`;
+                    chatMessages.appendChild(aiMessageDiv);
+                    
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    
+                    // Play the response as audio if voice mode is enabled
+                    if (voiceModeEnabled) {
+                        playResponseAudio(data.response, false);
+                    }
+                });
+            }
+        }
+
+        // Submit diagnosis
+        document.getElementById('submit-diagnosis').addEventListener('click', function() {
+            // Show completion button
+            document.getElementById('completion-section').style.display = 'block';
+        });
+
+        // Complete simulation
+        document.getElementById('complete-simulation').addEventListener('click', function() {
+            // Redirect to results page
+            window.location.href = `/results/{{ case.id }}`;
+        });
+
+        // Whiteboard functionality would be implemented with canvas operations
+        // Here's a simplified initialization
+        const canvas = document.getElementById('whiteboard-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size to match container
+        function resizeCanvas() {
+            const container = document.querySelector('.whiteboard-canvas-container');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Order imaging button
+        document.getElementById('order-imaging').addEventListener('click', function() {
+            // Add an AI message suggesting imaging
+            const chatMessages = document.getElementById('chat-messages');
+            if (chatMessages) {
+                const aiMessage = document.createElement('div');
+                aiMessage.className = 'message patient';
+                aiMessage.innerHTML = '<p>The pain has been getting worse over the last 24 hours. It started around my belly button but now it\'s more on the lower right side.</p>';
+                chatMessages.appendChild(aiMessage);
+                
+                // Simulation doctor's suggestion
+                const doctorMessage = document.createElement('div');
+                doctorMessage.className = 'message system';
+                doctorMessage.innerHTML = '<p>Based on the symptoms, it would be appropriate to order imaging to confirm your suspicion.</p>';
+                chatMessages.appendChild(doctorMessage);
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Cases - Sutra</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>Sutra</h1>
+            </div>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('cases') }}" class="active">Cases</a></li>
+                <li><a href="#">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="page-header">
+            <h1>Patient Case Library</h1>
+            <p>Select a patient case to begin your simulation. Each case presents unique diagnostic challenges.</p>
+        </section>
+
+        <section class="case-filters">
+            <div class="filter-group">
+                <label for="difficulty">Difficulty:</label>
+                <select id="difficulty" name="difficulty">
+                    <option value="all">All Levels</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="system">Body System:</label>
+                <select id="system" name="system">
+                    <option value="all">All Systems</option>
+                    <option value="cardiovascular">Cardiovascular</option>
+                    <option value="respiratory">Respiratory</option>
+                    <option value="gastrointestinal">Gastrointestinal</option>
+                    <option value="neurological">Neurological</option>
+                    <option value="musculoskeletal">Musculoskeletal</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <input type="text" id="search" name="search" placeholder="Search cases...">
+            </div>
+        </section>
+
+        <section class="case-cards">
+            {% for case in cases %}
+            <div class="case-card">
+                <div class="case-info">
+                    <h3>{{ case.name }}</h3>
+                    <div class="case-demographics">
+                        <span class="case-age">{{ case.age }} year old</span>
+                        <span class="case-gender">{{ case.gender }}</span>
+                    </div>
+                    <div class="case-complaint">
+                        <span class="complaint-badge">{{ case.chief_complaint }}</span>
+                    </div>
+                    <p>{{ case.symptoms[0] }}{% if case.symptoms|length > 1 %}...{% endif %}</p>
+                </div>
+                <div class="case-actions">
+                    <a href="{{ url_for('simulation', case_id=case.id) }}" class="btn-primary">Start Case</a>
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Sutra Learning System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html> 

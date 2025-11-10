@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sutra - Medical Case Simulations</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>Sutra</h1>
+            </div>
+            <ul>
+                <li><a href="{{ url_for('index') }}" class="active">Home</a></li>
+                <li><a href="{{ url_for('cases') }}">Cases</a></li>
+                <li><a href="#">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Learn to Think Like a Doctor</h1>
+                <p>Practice clinical reasoning with interactive patient case simulations. Enhance your diagnostic skills through realistic patient interactions.</p>
+                <a href="{{ url_for('cases') }}" class="btn-primary">Start Simulation</a>
+            </div>
+            <div class="hero-image">
+                <img src="{{ url_for('static', filename='images/doctor-patient.svg') }}" alt="Doctor and patient illustration">
+            </div>
+        </section>
+
+        <section class="features">
+            <h2>How It Works</h2>
+            <div class="feature-cards">
+                <div class="feature-card">
+                    <div class="feature-icon">1</div>
+                    <h3>Interview the Patient</h3>
+                    <p>Interact with AI patients who present with various symptoms. Use voice or text to gather information.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">2</div>
+                    <h3>Analyze and Diagnose</h3>
+                    <p>Use an interactive whiteboard to organize findings and work through differential diagnoses.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">3</div>
+                    <h3>Review Performance</h3>
+                    <p>Get feedback on your clinical reasoning with detailed statistics and suggestions.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="testimonials">
+            <h2>What Medical Students Say</h2>
+            <div class="testimonial-cards">
+                <div class="testimonial-card">
+                    <p>"Sutra helped me develop my clinical reasoning skills in a way traditional textbooks never could."</p>
+                    <div class="testimonial-author">- Medical Student, Year 2</div>
+                </div>
+                <div class="testimonial-card">
+                    <p>"The interactive patient simulations made learning differential diagnosis much more engaging."</p>
+                    <div class="testimonial-author">- Medical Student, Year 1</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Sutra Learning System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html> 
