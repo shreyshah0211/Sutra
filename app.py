@@ -14,7 +14,7 @@ app.secret_key = os.urandom(24)  # For session management
 
 # OpenAI configuration - load API key from environment variable
 # openai.api_key = os.getenv("OPENAI_API_KEY")
-openai.api_key = "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"
+openai.api_key = ""
 
 # Register data directory for serving static files
 @app.route('/static/data/<path:filename>')
