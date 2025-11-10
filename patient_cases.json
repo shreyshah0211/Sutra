@@ -1,0 +1,80 @@
+[
+  {
+    "id": "case001",
+    "name": "Alicia Smith",
+    "age": 33,
+    "gender": "Female",
+    "chief_complaint": "Right lower quadrant pain",
+    "condition": "Appendicitis",
+    "symptoms": [
+      "Right lower quadrant pain",
+      "Mild anorexia",
+      "No nausea",
+      "Low-grade fever"
+    ],
+    "history": "No significant past medical history",
+    "diagnosis": "Acute appendicitis",
+    "imaging_needed": "CT scan of abdomen"
+  },
+  {
+    "id": "case002",
+    "name": "James Wilson",
+    "age": 57,
+    "gender": "Male",
+    "chief_complaint": "Chest pain and shortness of breath",
+    "condition": "Myocardial Infarction",
+    "symptoms": [
+      "Substernal chest pain",
+      "Pain radiating to left arm",
+      "Shortness of breath",
+      "Diaphoresis"
+    ],
+    "history": "Hypertension, Hyperlipidemia, Smoker",
+    "diagnosis": "Acute myocardial infarction",
+    "imaging_needed": "ECG, Cardiac enzymes"
+  },
+  {
+    "id": "case003",
+    "name": "Mr. Alcot",
+    "age": 68,
+    "gender": "Male",
+    "chief_complaint": "Cough and fever for four days",
+    "condition": "Community-acquired pneumonia with likely underlying malignancy",
+    "symptoms": [
+      "Productive cough with yellow sputum and blood streaks",
+      "Fever (102.6°F)",
+      "Shaking chills",
+      "Malaise",
+      "Right-sided chest pain that worsens with inspiration",
+      "Weight loss of 15 lbs over past few months",
+      "Dyspnea",
+      "Finger clubbing"
+    ],
+    "vitals": {
+      "bp": "152/90",
+      "hr": 112,
+      "rr": 24,
+      "temp": 102.6
+    },
+    "physical_exam": "Elderly man appearing tired, haggard, and underweight with sallow complexion. Continuous coughing. Leans to right side, holding right chest. Large, non-tender hard lymph node in right supraclavicular fossa. Dullness to percussion in right mid-anterior and mid-lateral lung fields. Bronchial breath sounds, rhonchi, and late inspiratory crackles in the same areas. Bilateral diminished vesicular breath sounds. Finger clubbing present.",
+    "labs": "WBC 17,000/mm3; neutrophils 70%, bands 15%, lymphocytes 15%",
+    "history": "50-year smoking history (2 packs/day); chronic smoker's cough for 10-15 years; retired truck driver; history of mild hypertension, bronchitis, appendicitis, hemorrhoids, fractured femur and splenic injury from motorcycle accident",
+    "initial_diagnosis": "Community-acquired pneumonia (right middle lobe)",
+    "follow_up": "After 10 days of antibiotic treatment, fever abated and patient felt somewhat better. Follow-up chest x-ray revealed a right hilar mass. Sputum cytology showed atypical cells.",
+    "diagnosis": "Community-acquired pneumonia with underlying suspected lung malignancy",
+    "imaging_needed": "Chest X-ray PA and Lateral views",
+    "imaging_files": {
+      "initial_chest_xray_pa": "data/case1/x-ray1.jpg",
+      "initial_chest_xray_lateral": "data/case1/x-ray2-lateral.jpg",
+      "finger_clubbing": "data/case1/image61.jpg"
+    },
+    "audio_file": "data/case1/patient_intro.mp3",
+    "differential_diagnosis": [
+      "Community-acquired pneumonia",
+      "Lung cancer",
+      "Tuberculosis",
+      "Pulmonary abscess",
+      "Bronchiectasis"
+    ]
+  }
+]
