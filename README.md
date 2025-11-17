@@ -1,4 +1,5 @@
 # Sutra
+
 # Problem 
 Medical education is stuck in the past. Despite breakthroughs in modern medicine, we’re still training our medical students with the same methods from decades ago. With these dated and non interactive resources, healthcare students struggle with the transition from exam/theory-heavy curriculum to real patient interaction and on-the-fly clinical reasoning in the field. Studies prove constant confusion for new residents in performance/feedback, standardized study resources, and perioperative planning. The consequence: Medical professionals feeling unprepared when it matters the most—during real-world, high-stakes clinical encounters.  
 
